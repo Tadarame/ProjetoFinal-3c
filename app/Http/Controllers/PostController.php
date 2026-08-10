@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\post;
+use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Resources\PostResource;
+use App\Http\Requests\StorePostRequest;
+use App\Http\Requests\UpdatePostRequest;
 
 class PostController extends Controller
 {
@@ -15,52 +19,43 @@ class PostController extends Controller
         ->latest()
         ->paginate(10);
 
-        return response() ->json($posts);
+        return PostResource::collection($posts);
     }
 
 
     //Post
-    public function store(Request $request)
+    public function store(StorePostRequest $request)
     {
-        $validate = $request->validate([
-            'caption' => 'nullable|string|max:2200',
-            'image' => 'required|image|max:5120',
-        ]);
-
         $path = $request->file('image')->store('posts', 'public');
+
 
         $post = Post::create([
             'user_id' =>$request->user()->id,
-            'caption' => $validate['caption'] ?? null,
+            'caption' => $request->validated('caption'),
             'image_path' => $path,
         ]);
 
-        return response()->json($post,201);
+        return new PostResource($post);
     }
 
     //GET POST
     public function show(Post $post)
     {
         $post->load(['user', 'comments.user', 'likes']);
-        return response()->json($post);
+        return new PostResource($post);
     }
     //Put?patch
-    public function update(Request $request, Post $post)
+    public function update(UpdatePostRequest $request, Post $post)
     {
         if($request->user()->id !== $post->user_id){
             return response()->json(['message' => 'Não autorizado'], 403);
         }
 
-        $validate = $request->validate([
-            'caption' => 'nullable|string|max:2200',
-        ]);
+        $post->update($request->validated());
 
-        $post->update($validate);
+        return new PostResource($post);
 
-        return response()->json($post);
     }
-
-
     //delete
     public function destroy(Request $request,Post $post)
     {
@@ -69,7 +64,7 @@ class PostController extends Controller
         }
         if ($post->image_path)
             {
-                Storage:disk('public')->delete($post->iamge_path);
+                Storage::disk('public')->delete($post->image_path);
             }
         $post ->delete();
 

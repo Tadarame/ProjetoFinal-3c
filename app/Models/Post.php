@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class post extends Model
+class Post extends Model
 {
     
     //
@@ -18,7 +18,7 @@ class post extends Model
     {
         return $this->hasMany(Comment::class);
     }
-    public function like()
+    public function likes()
     {
         return $this->hasMany(Like::class);
     }

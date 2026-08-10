@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Like;
 use App\Models\Post;
 
-class likeController extends Controller
+class LikeController extends Controller
 {
     public function toggle(Request $request, Post $post)
     {

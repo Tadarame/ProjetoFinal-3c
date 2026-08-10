@@ -6,7 +6,7 @@ use App\Models\Comment;
 use App\Models\Post;
 use Illuminate\Http\Request;
 
-class commentController extends Controller
+class CommentController extends Controller
 {
     //get
     public function index(Post $post)

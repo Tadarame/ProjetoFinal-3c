@@ -1,0 +1,176 @@
+* {
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #fafafa;
+    margin: 0;
+}
+
+/* ---------- LOGIN / REGISTRO ---------- */
+
+.auth-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.auth-container {
+    background: white;
+    border: 1px solid #dbdbdb;
+    padding: 40px;
+    width: 350px;
+    text-align: center;
+}
+
+.auth-container input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #dbdbdb;
+    border-radius: 4px;
+}
+
+.auth-container button {
+    width: 100%;
+    padding: 10px;
+    background: #0095f6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.error {
+    color: red;
+    font-size: 14px;
+}
+
+/* ---------- FEED ---------- */
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    border-bottom: 1px solid #dbdbdb;
+    padding: 15px 30px;
+}
+
+.topbar h1 {
+    font-size: 22px;
+    margin: 0;
+}
+
+.topbar button {
+    background: #ed4956;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.feed-container {
+    max-width: 500px;
+    margin: 30px auto;
+    padding: 0 15px;
+}
+
+.create-post {
+    background: white;
+    border: 1px solid #dbdbdb;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.create-post h2 {
+    margin-top: 0;
+    font-size: 16px;
+}
+
+.create-post input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #dbdbdb;
+    border-radius: 4px;
+}
+
+.create-post button {
+    background: #0095f6;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.post-card {
+    background: white;
+    border: 1px solid #dbdbdb;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    overflow: hidden;
+}
+
+.post-header {
+    padding: 12px 15px;
+}
+
+.post-image {
+    width: 100%;
+    max-height: 500px;
+    object-fit: cover;
+    display: block;
+}
+
+.post-actions {
+    padding: 10px 15px;
+}
+
+.like-btn {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.post-caption {
+    padding: 0 15px 10px;
+    font-size: 14px;
+}
+
+.comments {
+    padding: 0 15px 10px;
+    font-size: 14px;
+}
+
+.comments p {
+    margin: 4px 0;
+}
+
+.comment-form {
+    display: flex;
+    border-top: 1px solid #efefef;
+    padding: 10px 15px;
+}
+
+.comment-form input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 14px;
+}
+
+.comment-form button {
+    background: none;
+    border: none;
+    color: #0095f6;
+    font-weight: bold;
+    cursor: pointer;
+}

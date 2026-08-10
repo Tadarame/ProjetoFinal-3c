@@ -1,4 +1,4 @@
-FROM php:8.2-fpm 
+FROM php:8.3-fpm 
 
 WORKDIR /var/www 
 
@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y \
     curl \
     zip \
     unzip \
-    libpngp-dev \
+    libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
     libonig-dev \
@@ -21,7 +21,7 @@ COPY . .
 
 RUN composer install
 
-RUN chown -r www-data /var/www/storage /var/www/bootstrap/cache
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
 EXPOSE 9000
 

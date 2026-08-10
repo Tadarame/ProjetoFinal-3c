@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Feed - InstaClone</title>
+    <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+    <header class="topbar">
+        <h1>InstaClone</h1>
+        <button id="logoutBtn">Sair</button>
+    </header>
+
+    <main class="feed-container">
+        <section class="create-post">
+            <h2>Novo post</h2>
+            <form id="createPostForm">
+                <input type="text" id="caption" placeholder="Escreva uma legenda...">
+                <input type="file" id="image" accept="image/*" required>
+                <button type="submit">Publicar</button>
+            </form>
+        </section>
+
+        <section id="postsContainer"></section>
+    </main>
+
+    <script type="module" src="/src/feed.js"></script>
+</body>
+</html>
