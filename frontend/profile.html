@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil - InstaClone</title>
+    <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+    <header class="topbar">
+        <h1>InstaClone</h1>
+        <nav class="nav-links">
+            <a href="/feed.html">Home</a>
+            <a href="/search.html">Buscar</a>
+            <a href="/profile.html" class="active">Perfil</a>
+        </nav>
+        <button id="logoutBtn">Sair</button>
+    </header>
+
+    <main class="profile-container">
+        <section class="profile-header">
+            <img id="profileAvatar" class="profile-avatar" src="https://ui-avatars.com/api/?name=User" alt="Avatar">
+
+            <div class="profile-info">
+                <div class="profile-top-row">
+                    <h2 id="profileUsername">@usuario</h2>
+                    <button id="followBtn" class="follow-btn" style="display:none;">Seguir</button>
+                    <button id="editBtn" class="edit-btn" style="display:none;">Editar perfil</button>
+                </div>
+
+                <div class="profile-stats">
+                    <span><strong id="postsCount">0</strong> posts</span>
+                    <span><strong id="followersCount">0</strong> seguidores</span>
+                    <span><strong id="followingCount">0</strong> seguindo</span>
+                </div>
+
+                <p id="profileName" class="profile-name"></p>
+                <p id="profileBio" class="profile-bio"></p>
+            </div>
+        </section>
+
+        <!-- Formulário de edição (só aparece no próprio perfil) -->
+        <section id="editForm" class="edit-form" style="display:none;">
+            <h3>Editar perfil</h3>
+            <form id="updateProfileForm">
+                <input type="text" id="editName" placeholder="Nome">
+                <input type="text" id="editUsername" placeholder="Usuário">
+                <textarea id="editBio" placeholder="Bio" maxlength="150"></textarea>
+                <input type="file" id="editAvatar" accept="image/*">
+                <button type="submit">Salvar</button>
+                <p id="editErrorMsg" class="error"></p>
+            </form>
+        </section>
+
+        <hr>
+
+        <section id="profilePosts" class="profile-grid"></section>
+    </main>
+
+    <script type="module" src="/src/profile.js"></script>
+</body>
+</html>
