@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function register (Request $request)
+    public function register(Request $request)
     {
         $validate = $request->validate([
             'name' => 'required|string|max:255',
@@ -17,7 +18,7 @@ class AuthController extends Controller
             'password' => 'required|string|min:6',
         ]);
 
-        $user = User::create ([
+        $user = User::create([
             'name' => $validate['name'],
             'username' => $validate['username'],
             'email' => $validate['email'],
@@ -26,28 +27,28 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json(['user' => $user, 'token' => $token], 201);
+        return response()->json(['user' => new UserResource($user), 'token' => $token], 201);
     }
 
-    public function login (Request $request )
+    public function login(Request $request)
     {
-        $validate = $request->validate ([
+        $validate = $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
         $user = User::where('email', $validate['email'])->first();
 
-        if(!$user || !Hash::check($validate['password'], $user->password)) {
+        if (!$user || !Hash::check($validate['password'], $user->password)) {
             return response()->json(['message' => 'Credenciais invalidas'], 401);
         }
-        
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json(['user' => $user, 'token' => $token]);
+        return response()->json(['user' => new UserResource($user), 'token' => $token]);
     }
 
-    public function logout (Request $request)
+    public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
         return response()->json(['message' => 'logout realizado']);
