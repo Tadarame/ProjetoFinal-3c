@@ -1,0 +1,312 @@
+openapi: 3.0.3
+info:
+  title: InstaClone API
+  version: 1.0.0
+  description: API REST do projeto InstaClone em Laravel.
+
+servers:
+  - url: http://localhost:8000/api
+    description: Ambiente local
+
+paths:
+  /register:
+    post:
+      summary: Registrar usuário
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, username, email, password]
+              properties:
+                name:
+                  type: string
+                username:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "201":
+          description: Usuário registrado
+
+  /login:
+    post:
+      summary: Login
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Login realizado
+
+  /me:
+    get:
+      summary: Usuário autenticado
+      tags: [Auth]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Dados do usuário autenticado
+
+  /posts:
+    get:
+      summary: Listar posts
+      tags: [Posts]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista paginada de posts
+
+    post:
+      summary: Criar post
+      tags: [Posts]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [image]
+              properties:
+                caption:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: Post criado
+
+  /posts/{post}:
+    get:
+      summary: Ver post individual
+      tags: [Posts]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: post
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Dados do post
+
+    put:
+      summary: Atualizar post
+      tags: [Posts]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: post
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                caption:
+                  type: string
+      responses:
+        "200":
+          description: Post atualizado
+
+    delete:
+      summary: Excluir post próprio
+      tags: [Posts]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: post
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Post excluído
+
+  /posts/{post}/like:
+    post:
+      summary: Curtir ou remover curtida
+      tags: [Likes]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: post
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Estado do like atualizado
+
+  /posts/{post}/comments:
+    get:
+      summary: Listar comentários de um post
+      tags: [Comments]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: post
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Lista de comentários
+
+    post:
+      summary: Criar comentário
+      tags: [Comments]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: post
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [body]
+              properties:
+                body:
+                  type: string
+      responses:
+        "201":
+          description: Comentário criado
+
+  /comments/{comment}:
+    delete:
+      summary: Excluir comentário próprio
+      tags: [Comments]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: comment
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Comentário excluído
+
+  /profile:
+    get:
+      summary: Perfil do usuário logado
+      tags: [Profile]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Dados do perfil
+
+    put:
+      summary: Atualizar perfil
+      tags: [Profile]
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                username:
+                  type: string
+                bio:
+                  type: string
+                avatar:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Perfil atualizado
+
+  /users/{user}:
+    get:
+      summary: Ver perfil de usuário
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: user
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Perfil do usuário
+
+  /users/{user}/follow:
+    post:
+      summary: Seguir ou deixar de seguir usuário
+      tags: [Follow]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: user
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Estado de follow atualizado
+
+  /search:
+    get:
+      summary: Buscar usuários
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Lista de usuários encontrados
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Sanctum Token

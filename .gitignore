@@ -44,4 +44,4 @@ docker/mysql
 docker/db
 *.sql
 *.sqlite
-database/database.sqlite
+database/database.sqlite*.zip

@@ -1,43 +1,70 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Feed - InstaClone</title>
-    <link rel="stylesheet" href="/src/style.css">
-</head>
-<body>
-    <header class="topbar">
-        <h1>InstaClone</h1>
-        <nav class="nav-links">
-            <a href="/feed.html" class="active">Home</a>
-            <a href="/search.html">Buscar</a>
-            <a href="/profile.html">Perfil</a>
-        </nav>
-        <button id="logoutBtn">Sair</button>
-    </header>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Feed - InstaClone</title>
+        <link rel="stylesheet" href="/src/style.css" />
+    </head>
+    <body>
+        <header class="topbar">
+            <h1>InstaClone</h1>
+            <nav class="nav-links">
+                <a href="/feed.html" class="active">Home</a>
+                <a href="/search.html">Buscar</a>
+                <a href="/profile.html">Perfil</a>
+            </nav>
+            <button id="logoutBtn">Sair</button>
+        </header>
+        <main class="feed-layout">
+            <section class="feed-main">
+                <section class="stories-bar">
+                    <form id="createStoryForm" class="story-create">
+                        <label>
+                            +
+                            <input
+                                type="file"
+                                id="storyImage"
+                                accept="image/*"
+                                hidden
+                            />
+                        </label>
+                    </form>
 
-    <main class="feed-layout">
-        <section class="feed-main">
-            <section class="create-post">
-                <h2>Novo post</h2>
-                <form id="createPostForm">
-                    <input type="text" id="caption" placeholder="Escreva uma legenda...">
-                    <div class="create-post-actions">
-                        <input type="file" id="image" accept="image/*" required>
-                        <button type="submit">Publicar</button>
-                    </div>
-                </form>
+                    <div id="storiesContainer" class="stories-list"></div>
+                </section>
+
+                <div id="storyModal" class="story-modal" style="display: none">
+                    <img id="storyModalImage" src="" alt="Story" />
+                </div>
+                <section class="create-post">
+                    <h2>Novo post</h2>
+                    <form id="createPostForm">
+                        <input
+                            type="text"
+                            id="caption"
+                            placeholder="Escreva uma legenda..."
+                        />
+                        <div class="create-post-actions">
+                            <input
+                                type="file"
+                                id="image"
+                                accept="image/*"
+                                required
+                            />
+                            <button type="submit">Publicar</button>
+                        </div>
+                    </form>
+                </section>
+
+                <section id="postsContainer"></section>
             </section>
 
-            <section id="postsContainer"></section>
-        </section>
+            <aside class="suggestions-card">
+                <h3>Sugestões para seguir</h3>
+                <div id="suggestionsContainer"></div>
+            </aside>
+        </main>
 
-        <aside class="suggestions-card">
-            <h3>Sugestões para seguir</h3>
-            <div id="suggestionsContainer"></div>
-        </aside>
-    </main>
-
-    <script type="module" src="/src/feed.js"></script>
-</body>
+        <script type="module" src="/src/feed.js"></script>
+    </body>
 </html>

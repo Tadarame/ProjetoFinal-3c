@@ -532,3 +532,67 @@ body {
         order: -1;
     }
 }
+.stories-bar {
+    background: white;
+    border: 1px solid #dbdbdb;
+    border-radius: 8px;
+    padding: 14px;
+    margin: 0 auto 20px;
+    max-width: 520px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    overflow-x: auto;
+}
+
+.stories-list {
+    display: flex;
+    gap: 12px;
+}
+
+.story-create label,
+.story-bubble {
+    width: 68px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    text-align: center;
+}
+
+.story-create label span,
+.story-bubble span,
+.story-create label {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    border: 3px solid #f97316;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f97316;
+    font-weight: bold;
+    margin: 0 auto 4px;
+}
+
+.story-bubble small {
+    display: block;
+    font-size: 11px;
+    color: #555;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.story-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.story-modal img {
+    max-width: 90vw;
+    max-height: 90vh;
+    border-radius: 8px;
+}

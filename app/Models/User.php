@@ -32,6 +32,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Comment::class);
     }
+    public function stories()
+    {
+        return $this->hasMany(Story::class);
+    }
 
     //quem o usuario segue 
 

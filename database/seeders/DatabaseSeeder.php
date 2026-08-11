@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Post;
 use App\Models\Comment;
 use App\Models\Like;
+use App\Models\Story;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -15,6 +16,10 @@ class DatabaseSeeder extends Seeder
         $users = User::factory(10)->create();
 
         $users->each(function ($user) use ($users) {
+            Story::factory(2)->create([
+                'user_id' => $user->id,
+            ]);
+
             $posts = Post::factory(3)->create([
                 'user_id' => $user->id,
             ]);

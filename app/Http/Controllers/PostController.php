@@ -33,7 +33,7 @@ class PostController extends Controller
             $request->file('image')
         );
 
-        return new PostResource($post);
+        return new PostResource($post->load(['user', 'comments.user', 'likes']));
     }   
 
     //GET POST

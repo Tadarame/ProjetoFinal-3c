@@ -9,6 +9,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StoryController;
 
 
 Route::get('/users', function (Request $request) {
@@ -34,6 +35,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/search', [UserController::class, 'search']);
     Route::get('/users/{user}', [UserController::class, 'show']);
+
+    Route::get('/stories', [StoryController::class, 'index']);
+Route::post('/stories', [StoryController::class, 'store']);
 
     Route::get('/posts/{post}/comments', [CommentController::class, 'index']);
     Route::post('/posts/{post}/comments', [CommentController::class, 'store']);

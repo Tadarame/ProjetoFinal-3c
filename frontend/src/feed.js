@@ -1,36 +1,36 @@
-
-import { apiFetch, getToken, logout } from './api.js';
+import { apiFetch, getToken, logout } from "./api.js";
 
 if (!getToken()) {
     window.location.href = "index.html";
 }
 
-const postsContainer = document.getElementById('postsContainer');
-const createPostForm = document.getElementById('createPostForm');
-
+const postsContainer = document.getElementById("postsContainer");
+const createPostForm = document.getElementById("createPostForm");
+const storiesContainer = document.getElementById("storiesContainer");
+const createStoryForm = document.getElementById("createStoryForm");
+const storyImageInput = document.getElementById("storyImage");
 //listar
 
 function formatDate(dateString) {
-    return new Intl.DateTimeFormat('pt-BR', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
+    return new Intl.DateTimeFormat("pt-BR", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
     }).format(new Date(dateString));
 }
 
-async function loadPosts(){
-    const response = await apiFetch('/posts');
+async function loadPosts() {
+    const response = await apiFetch("/posts");
     const data = await response.json();
 
-    postsContainer.innerHTML = '';
+    postsContainer.innerHTML = "";
 
-    data.data.forEach(post => {
-        console.log(post.iamge_url);
-        const postE1 = document.createElement('div');
-        postE1.className = 'post-card';
-        
+    data.data.forEach((post) => {
+        const postE1 = document.createElement("div");
+        postE1.className = "post-card";
+
         postE1.innerHTML = `
     <div class="post-header">
         <a href="/profile.html?id=${post.user.id}"><strong>${post.user.username}</strong></a>
@@ -44,15 +44,19 @@ async function loadPosts(){
         <a href="/post.html?id=${post.id}" class="comment-link">💬 Ver comentários</a>
     </div>
 
-    <p class="post-caption"><strong>${post.user.username}</strong> ${post.caption ?? ''}</p>
+    <p class="post-caption"><strong>${post.user.username}</strong> ${post.caption ?? ""}</p>
 
     <div class="comments" id="comments-${post.id}">
-        ${(post.comments || []).map(c => `
+        ${(post.comments || [])
+            .map(
+                (c) => `
             <p>
                 <strong>${c.user.username}</strong> ${c.body}
                 <span class="comment-date">${formatDate(c.created_at)}</span>
             </p>
-        `).join('')}
+        `,
+            )
+            .join("")}
     </div>
 
     <form class="comment-form" data-id="${post.id}">
@@ -61,12 +65,11 @@ async function loadPosts(){
     </form>
 `;
 
-        postE1.querySelector('.post-image').addEventListener('click', () => {
+        postE1.querySelector(".post-image").addEventListener("click", () => {
             window.location.href = `/post.html?id=${post.id}`;
         });
 
         postsContainer.appendChild(postE1);
-        
     });
 
     attachEvent();
@@ -74,79 +77,86 @@ async function loadPosts(){
 
 //criar
 
-    if (createPostForm) {
-        createPostForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
+if (createPostForm) {
+    createPostForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-            const caption = document.getElementById('caption').value;
-            const imageFile = document.getElementById('image').files[0];
+        const caption = document.getElementById("caption").value;
+        const imageFile = document.getElementById("image").files[0];
 
-            const formData = new FormData();
-            formData.append('caption', caption);
-            formData.append('image', imageFile);
+        const formData = new FormData();
+        formData.append("caption", caption);
+        formData.append("image", imageFile);
 
-            const response = await apiFetch('/posts', {
-                method :'POST',
-                body: formData,
-            });
-
-            if (response.ok){
-                createPostForm.reset();
-                loadPosts();
-            } else {
-                const data = await response.json();
-                alert(data.message || 'Erro ao criar o Post');
-            }
+        const response = await apiFetch("/posts", {
+            method: "POST",
+            body: formData,
         });
-    }
+
+        if (response.ok) {
+            createPostForm.reset();
+            loadPosts();
+        } else {
+            const data = await response.json();
+            alert(data.message || "Erro ao criar o Post");
+        }
+    });
+}
 
 //like e comentarios
 
-    function attachEvent() {
-        document.querySelectorAll('.like-btn').forEach(btn => {
-            btn.addEventListener('click', async () => {
-                const postId = btn.dataset.id;
-                const response =  await apiFetch(`/posts/${postId}/like`, { method: 'POST' });
-                const data = await response.json();
-                btn.textContent = `❤️ ${data.likes_count}`;
+function attachEvent() {
+    document.querySelectorAll(".like-btn").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+            const postId = btn.dataset.id;
+            const response = await apiFetch(`/posts/${postId}/like`, {
+                method: "POST",
             });
+            const data = await response.json();
+            btn.textContent = `❤️ ${data.likes_count}`;
         });
+    });
 
-        document.querySelectorAll('.comment-form').forEach(form => {
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
+    document.querySelectorAll(".comment-form").forEach((form) => {
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
 
-                const postId = form.dataset.id;
-                const input = form.querySelector('input');
-                const body = input.value;
+            const postId = form.dataset.id;
+            const input = form.querySelector("input");
+            const body = input.value;
 
-                const response = await apiFetch(`/posts/${postId}/comments`, {
-                    method : 'POST',
-                    headers : {'Content-Type': 'application/json'},
-                    body: JSON.stringify({body}),
-                });
-
-                if (response.ok) {
-                    const comment = await response.json();
-                    const commentsDiv = document.getElementById(`comments-${postId}`);
-                    commentsDiv.innerHTML += `<p><strong>${comment.user.username}</strong> ${comment.body}</p>`;
-                    input.value = '';
-                }
+            const response = await apiFetch(`/posts/${postId}/comments`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ body }),
             });
+
+            if (response.ok) {
+                const comment = await response.json();
+                const commentsDiv = document.getElementById(
+                    `comments-${postId}`,
+                );
+                commentsDiv.innerHTML += `<p><strong>${comment.user.username}</strong> ${comment.body}</p>`;
+                input.value = "";
+            }
         });
-    }
+    });
+}
 
-    //sujestieos
-    async function loadSuggestions() {
-        const container = document.getElementById('suggestionsContainer');
-        if (!container) return;
+//sujestieos
+async function loadSuggestions() {
+    const container = document.getElementById("suggestionsContainer");
+    if (!container) return;
 
-        const response = await apiFetch('/search');
-        const result = await response.json();
+    const response = await apiFetch("/search");
+    const result = await response.json();
 
-        const users = result.data || [];
+    const users = result.data || [];
 
-        container.innerHTML = users.slice(0, 5).map(user => `
+    container.innerHTML = users
+        .slice(0, 5)
+        .map(
+            (user) => `
             <div class="suggestion-row">
                 <img src="${user.avatar_url || `https://ui-avatars.com/api/?name=${user.name}`}" alt="Avatar">
                 <div>
@@ -154,12 +164,67 @@ async function loadPosts(){
                     <span>${user.name}</span>
                 </div>
             </div>
-        `).join('');
-    }
+        `,
+        )
+        .join("");
+}
 
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-        logout();
+document.getElementById("logoutBtn").addEventListener("click", () => {
+    logout();
+});
+
+async function loadStories() {
+    const response = await apiFetch("/stories");
+    const stories = await response.json();
+
+    storiesContainer.innerHTML = stories
+        .map(
+            (story) => `
+        <button class="story-bubble" data-image="${story.image_url}">
+            <span>${story.user.username[0].toUpperCase()}</span>
+            <small>${story.user.username}</small>
+        </button>
+    `,
+        )
+        .join("");
+
+    document.querySelectorAll(".story-bubble").forEach((button) => {
+        button.addEventListener("click", () => {
+            document.getElementById("storyModalImage").src =
+                button.dataset.image;
+            document.getElementById("storyModal").style.display = "flex";
+        });
     });
+}
 
-    loadPosts();
-    loadSuggestions();
+const storyModal = document.getElementById("storyModal");
+
+if (storyModal) {
+    storyModal.addEventListener("click", () => {
+        storyModal.style.display = "none";
+    });
+}
+
+if (storyImageInput) {
+    storyImageInput.addEventListener("change", async () => {
+        const file = storyImageInput.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append("image", file);
+
+        const response = await apiFetch("/stories", {
+            method: "POST",
+            body: formData,
+        });
+
+        if (response.ok) {
+            storyImageInput.value = "";
+            loadStories();
+        }
+    });
+}
+
+loadPosts();
+loadSuggestions();
+loadStories();
