@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Buscar - InstaClone</title>
+    <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+    <header class="topbar">
+        <h1>InstaClone</h1>
+        <nav class="nav-links">
+            <a href="/feed.html">Home</a>
+            <a href="/search.html" class="active">Buscar</a>
+            <a href="/profile.html">Perfil</a>
+        </nav>
+        <button id="logoutBtn">Sair</button>
+    </header>
+
+    <main class="search-container">
+        <input type="text" id="searchInput" class="search-input" placeholder="Pesquisar por nome ou usuário...">
+        <section id="searchResults" class="search-results"></section>
+    </main>
+
+    <script type="module" src="/src/search.js"></script>
+</body>
+</html>

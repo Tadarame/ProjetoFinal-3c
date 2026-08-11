@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Comment;
 use App\Models\Post;
+use App\Services\CommentService;
 use Illuminate\Http\Request;
 
 class CommentController extends Controller
@@ -20,22 +21,16 @@ class CommentController extends Controller
     }
 
     //Post
-    public function store(Request $request , Post $post)
-    {
-        $validate = $request->validate([
-            'body' => 'required|string|max:500',
-        ]);
+    public function store(Request $request, Post $post, CommentService $commentService)
+{
+    $validated = $request->validate([
+        'body' => 'required|string|max:500',
+    ]);
 
-        $comment = Comment::create([
-            'user_id' => $request->user()->id,
-            'post_id' => $post->id,
-            'body' => $validate['body'],
-        ]);
+    $comment = $commentService->create($request->user(), $post, $validated);
 
-        $comment->load('user');
-
-        return response()->json($comment, 201);
-    }
+    return response()->json($comment, 201);
+}
 
     public function update(Request $request, Comment $comment, Post $post)
     {
@@ -52,18 +47,14 @@ class CommentController extends Controller
         return response()->json($comment);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Request $request , Comment $comment)
-    {
-        if($request->user()->id !== $comment->user_id)
-            {
-                return response()->json(['message' => 'Não autorizado'], 403);
-            }
+    public function destroy(Request $request, Comment $comment, CommentService $commentService)
+{
+    $result = $commentService->delete($request->user(), $comment);
 
-            $comment->delete();
-
-            return response()->json(['message' => "Comentario apagado com suscesso"]);
+    if ($result['error']) {
+        return response()->json(['message' => $result['message']], $result['status']);
     }
+
+    return response()->json(['message' => $result['message']]);
+}
 }

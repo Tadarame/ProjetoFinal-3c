@@ -4,16 +4,15 @@ if (!getToken()) {
     window.location.href = '/index.html';
 }
 
-// Pega o ID do usuário pela URL: profile.html?id=3
-// Se não tiver ID na URL, mostra o próprio perfil (usuário logado)
 const params = new URLSearchParams(window.location.search);
 let profileId = params.get('id');
 
-let currentUserId = null; // ID de quem está logado
+let currentUserId = null;
 
 async function loadCurrentUser() {
     const response = await apiFetch('/me');
     const data = await response.json();
+
     currentUserId = data.id;
 
     if (!profileId) {
@@ -26,10 +25,19 @@ async function loadCurrentUser() {
 async function loadProfile() {
     const response = await apiFetch(`/users/${profileId}`);
     const data = await response.json();
-    const user = data.user;
-    const posts = data.posts;
 
-    document.getElementById('profileAvatar').src = user.avatar_url || `https://ui-avatars.com/api/?name=${user.name}`;
+    if (!response.ok) {
+        alert(data.message || 'Erro ao carregar perfil');
+        return;
+    }
+
+    const user = data.user;
+    const posts = data.posts || [];
+    const isOwnProfile = Number(profileId) === Number(currentUserId);
+
+    document.getElementById('profileAvatar').src =
+        user.avatar_url || `https://ui-avatars.com/api/?name=${user.name}`;
+
     document.getElementById('profileUsername').textContent = '@' + user.username;
     document.getElementById('profileName').textContent = user.name;
     document.getElementById('profileBio').textContent = user.bio || '';
@@ -37,7 +45,6 @@ async function loadProfile() {
     document.getElementById('followersCount').textContent = user.followers_count ?? 0;
     document.getElementById('followingCount').textContent = user.following_count ?? 0;
 
-    const isOwnProfile = Number(profileId) === Number(currentUserId);
     const followBtn = document.getElementById('followBtn');
     const editBtn = document.getElementById('editBtn');
 
@@ -45,34 +52,63 @@ async function loadProfile() {
         editBtn.style.display = 'inline-block';
         followBtn.style.display = 'none';
     } else {
-        followBtn.style.display = 'inline-block';
         editBtn.style.display = 'none';
+        followBtn.style.display = 'inline-block';
         followBtn.textContent = user.is_following ? 'Deixar de seguir' : 'Seguir';
     }
 
-    // Grade de posts
+    renderPosts(posts, isOwnProfile);
+    attachProfileEvents(user);
+}
+
+function renderPosts(posts, isOwnProfile) {
     const grid = document.getElementById('profilePosts');
     grid.innerHTML = '';
+
     posts.forEach(post => {
-        const img = document.createElement('img');
-        img.src = post.image_url;
-        img.className = 'grid-post';
-        grid.appendChild(img);
+        const postCard = document.createElement('div');
+        postCard.className = 'profile-post-card';
+
+        postCard.innerHTML = `
+            <img src="${post.image_url}" class="grid-post" alt="Post">
+            ${
+                isOwnProfile
+                    ? `<button class="delete-post-btn" data-id="${post.id}">Excluir</button>`
+                    : ''
+            }
+        `;
+
+        postCard.querySelector('img').addEventListener('click', () => {
+            window.location.href = `post.html?id=${post.id}`;
+        });
+
+        grid.appendChild(postCard);
     });
 
-    attachProfileEvents(user);
+    attachDeletePostEvents();
 }
 
 function attachProfileEvents(user) {
     const followBtn = document.getElementById('followBtn');
+
     followBtn.onclick = async () => {
-        const response = await apiFetch(`/users/${profileId}/follow`, { method: 'POST' });
+        const response = await apiFetch(`/users/${profileId}/follow`, {
+            method: 'POST',
+        });
+
         const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.message || 'Erro ao seguir usuário');
+            return;
+        }
+
         followBtn.textContent = data.following ? 'Deixar de seguir' : 'Seguir';
         document.getElementById('followersCount').textContent = data.followers_count;
     };
 
     const editBtn = document.getElementById('editBtn');
+
     editBtn.onclick = () => {
         const editForm = document.getElementById('editForm');
         editForm.style.display = editForm.style.display === 'none' ? 'block' : 'none';
@@ -83,40 +119,72 @@ function attachProfileEvents(user) {
     };
 }
 
-// Salvar edição de perfil
-const updateProfileForm = document.getElementById('updateProfileForm');
-updateProfileForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
+function attachDeletePostEvents() {
+    document.querySelectorAll('.delete-post-btn').forEach(button => {
+        button.addEventListener('click', async () => {
+            const postId = button.dataset.id;
 
-    const formData = new FormData();
-    formData.append('name', document.getElementById('editName').value);
-    formData.append('username', document.getElementById('editUsername').value);
-    formData.append('bio', document.getElementById('editBio').value);
+            if (!confirm('Deseja excluir este post?')) {
+                return;
+            }
 
-    const avatarFile = document.getElementById('editAvatar').files[0];
-    if (avatarFile) {
-        formData.append('avatar', avatarFile);
-    }
+            const response = await apiFetch(`/posts/${postId}`, {
+                method: 'DELETE',
+            });
 
-    // Laravel espera POST com _method=PUT quando manda FormData
-    formData.append('_method', 'PUT');
+            if (response.ok) {
+                loadProfile();
+                return;
+            }
 
-    const errorMsg = document.getElementById('editErrorMsg');
-
-    const response = await apiFetch('/profile', {
-        method: 'POST',
-        body: formData,
+            const data = await response.json();
+            alert(data.message || 'Erro ao excluir post');
+        });
     });
+}
 
-    if (response.ok) {
-        document.getElementById('editForm').style.display = 'none';
-        loadProfile();
-    } else {
+const updateProfileForm = document.getElementById('updateProfileForm');
+
+if (updateProfileForm) {
+    updateProfileForm.addEventListener('submit', async e => {
+        e.preventDefault();
+
+        const formData = new FormData();
+        formData.append('name', document.getElementById('editName').value);
+        formData.append('username', document.getElementById('editUsername').value);
+        formData.append('bio', document.getElementById('editBio').value);
+
+        const avatarFile = document.getElementById('editAvatar').files[0];
+
+        if (avatarFile) {
+            formData.append('avatar', avatarFile);
+        }
+
+        formData.append('_method', 'PUT');
+
+        const errorMsg = document.getElementById('editErrorMsg');
+        errorMsg.textContent = '';
+
+        const response = await apiFetch('/profile', {
+            method: 'POST',
+            body: formData,
+        });
+
         const data = await response.json();
-        const firstError = data.errors ? Object.values(data.errors)[0][0] : data.message;
+
+        if (response.ok) {
+            document.getElementById('editForm').style.display = 'none';
+            loadProfile();
+            return;
+        }
+
+        const firstError = data.errors
+            ? Object.values(data.errors)[0][0]
+            : data.message;
+
         errorMsg.textContent = firstError || 'Erro ao atualizar perfil';
-    }
-});
+    });
+}
 
 document.getElementById('logoutBtn').addEventListener('click', () => {
     logout();

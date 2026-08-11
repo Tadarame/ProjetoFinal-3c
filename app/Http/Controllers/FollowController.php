@@ -2,32 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\User;
+use App\Services\FollowService;
+use Illuminate\Http\Request;
 
 class FollowController extends Controller
 {
-    public function toggle(Request $request, User $user)
+    public function toggle(Request $request, User $user, FollowService $followService)
     {
-        $authUser = $request->user();
+        $result = $followService->toggle($request->user(), $user);
 
-        if ($authUser->id === $user->id){
-            return response()->json(['message' => 'voce nao pode seguir voce mesmo '], 422);
-        }
-
-        $isFollowing = $authUser->following()->where('following_id', $user->id)->exists();
-
-        if ($isFollowing){
-            $authUser->following()->detach($user->id);
-            $following = false;
-        } else {
-            $authUser->following()->attach($user->id);
-            $following = true;
+        if ($result['error']) {
+            return response()->json([
+                'message' => $result['message'],
+            ], $result['status']);
         }
 
         return response()->json([
-            'following' => $following,
-            'followers_count' => $user->followers()->count(),
+            'following' => $result['following'],
+            'followers_count' => $result['followers_count'],
         ]);
     }
 }

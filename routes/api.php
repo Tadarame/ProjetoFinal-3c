@@ -8,6 +8,8 @@ use App\Http\Controllers\LikeController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\FollowController;
+use App\Http\Controllers\ProfileController;
+
 
 Route::get('/users', function (Request $request) {
     return $request->user();
@@ -27,13 +29,15 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/users/{user}/follow', [FollowController::class, 'toggle']);
 
+    Route::get('/profile', [ProfileController::class, 'me']);
+    Route::put('/profile', [ProfileController::class, 'update']);
+
     Route::get('/search', [UserController::class, 'search']);
-Route::put('/profile', [UserController::class, 'update']);
-Route::get('/users/{user}', [UserController::class, 'show']);
+    Route::get('/users/{user}', [UserController::class, 'show']);
 
     Route::get('/posts/{post}/comments', [CommentController::class, 'index']);
     Route::post('/posts/{post}/comments', [CommentController::class, 'store']);
-    Route::delete('/comments/{comments}',[CommentController::class, 'destroy']);
+    Route::delete('/comments/{comment}',[CommentController::class, 'destroy']);
 
     Route::post('/posts/{post}/like', [LikeController::class, 'toggle']);
 });

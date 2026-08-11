@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    // GET /api/users/{user} -> perfil de qualquer usuário (ou o próprio)
     public function show(Request $request, User $user)
     {
         $user->loadCount(['posts', 'followers', 'following']);

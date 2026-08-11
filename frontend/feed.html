@@ -8,20 +8,34 @@
 <body>
     <header class="topbar">
         <h1>InstaClone</h1>
+        <nav class="nav-links">
+            <a href="/feed.html" class="active">Home</a>
+            <a href="/search.html">Buscar</a>
+            <a href="/profile.html">Perfil</a>
+        </nav>
         <button id="logoutBtn">Sair</button>
     </header>
 
-    <main class="feed-container">
-        <section class="create-post">
-            <h2>Novo post</h2>
-            <form id="createPostForm">
-                <input type="text" id="caption" placeholder="Escreva uma legenda...">
-                <input type="file" id="image" accept="image/*" required>
-                <button type="submit">Publicar</button>
-            </form>
+    <main class="feed-layout">
+        <section class="feed-main">
+            <section class="create-post">
+                <h2>Novo post</h2>
+                <form id="createPostForm">
+                    <input type="text" id="caption" placeholder="Escreva uma legenda...">
+                    <div class="create-post-actions">
+                        <input type="file" id="image" accept="image/*" required>
+                        <button type="submit">Publicar</button>
+                    </div>
+                </form>
+            </section>
+
+            <section id="postsContainer"></section>
         </section>
 
-        <section id="postsContainer"></section>
+        <aside class="suggestions-card">
+            <h3>Sugestões para seguir</h3>
+            <div id="suggestionsContainer"></div>
+        </aside>
     </main>
 
     <script type="module" src="/src/feed.js"></script>

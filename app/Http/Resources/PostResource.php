@@ -16,8 +16,11 @@ class PostResource extends JsonResource
             'caption' => $this->caption,
             'image_url' => Storage::disk('public')->url($this->image_path),
             'user' => new UserResource($this->whenLoaded('user')),
-            'comment' => CommentResource::collection($this->whenLoaded('comments')),
+            'comments' => CommentResource::collection($this->whenLoaded('comments')),
             'likes_count' => $this->whenLoaded('likes', fn () => $this->likes->count()),
+            'liked' => $this->whenLoaded('likes', fn () => $request->user()
+                ? $this->likes->contains('user_id', $request->user()->id)
+                : false),
             'created_at' => $this->created_at,
         ];
     }

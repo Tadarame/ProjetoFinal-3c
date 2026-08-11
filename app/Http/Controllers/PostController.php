@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\PostResource;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
+use App\Services\PostService;
 
 class PostController extends Controller
 {
@@ -15,7 +16,7 @@ class PostController extends Controller
   //eager loading
     public function index()
     {
-        $posts = Post::with(['user', 'comments', 'likes'])
+        $posts = Post::with(['user', 'comments.user', 'likes'])
         ->latest()
         ->paginate(10);
 
@@ -24,19 +25,16 @@ class PostController extends Controller
 
 
     //Post
-    public function store(StorePostRequest $request)
+    public function store(StorePostRequest $request, PostService $postService)
     {
-        $path = $request->file('image')->store('posts', 'public');
-
-
-        $post = Post::create([
-            'user_id' =>$request->user()->id,
-            'caption' => $request->validated('caption'),
-            'image_path' => $path,
-        ]);
+        $post = $postService->create(
+            $request->user(),
+            $request->validated(),
+            $request->file('image')
+        );
 
         return new PostResource($post);
-    }
+    }   
 
     //GET POST
     public function show(Post $post)
@@ -44,20 +42,20 @@ class PostController extends Controller
         $post->load(['user', 'comments.user', 'likes']);
         return new PostResource($post);
     }
+
     //Put?patch
-    public function update(UpdatePostRequest $request, Post $post)
+    public function update(UpdatePostRequest $request, Post $post, PostService $postService)
     {
-        if($request->user()->id !== $post->user_id){
-            return response()->json(['message' => 'Não autorizado'], 403);
+        $result = $postService->update($request->user(), $post, $request->validated());
+
+        if ($result['error']) {
+            return response()->json(['message' => $result['message']], $result['status']);
         }
 
-        $post->update($request->validated());
-
-        return new PostResource($post);
-
+        return new PostResource($result['post']);
     }
     //delete
-    public function destroy(Request $request,Post $post)
+    public function destroy(Request $request,Post $post, PostService $postService)
     {
         if($request->user()->id !== $post->user_id){
             return response()->json(['message' => 'Não autorizado'], 403);
